@@ -54,6 +54,18 @@ npm run db:migrate
 npm run db:push
 ```
 
-5. 
+5. (Optional, you do not need to do this if your database already has data, this script also flush all old data before seed) Seed data to database from (.csv)
+
+```
+npm run db:seed
+```
+
+# Version
+
+## v1.0.0 - Init - 2026-07-01
+- Init backend folder structure.
+- Create healhcheck API.
+- Create global error handler.
+- Create database schema and seed.
 
 
