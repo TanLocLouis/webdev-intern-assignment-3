@@ -31,8 +31,8 @@ This project parse student's scores from a `.csv` to Postgre `Supabase` database
 - Postgre (Supabase).
 
 # Installation
-1. First of all, you need to setup your environment variables in `/backend/.env` file
-
+1. First of all, you need to setup your environment variables in `/backend/.env` file  
+**NOTE**: Supabase provides many connection methods, some method only works with IPv6 network. Personally, I use `Session pooler` because it works well with my IPv4 network.
 ```
 DATABASE_URL="postgresql://admin:secret@localhost:5432/gscores"
 PORT=3001

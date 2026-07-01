@@ -14,12 +14,12 @@ export function createApp(): Application {
   app.use(express.json());
 
   // Health check
-  app.get('/api/health', (_req: Request, res: Response) => {
+  app.get('/api/v1/health', (_req: Request, res: Response) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   // Routes
-  // app.use('/api/scores', scoreRoutes);
+  app.use('/api/v1/scores', scoreRoutes);
 
   // 404 Route
   app.use((_req: Request, res: Response) => {
