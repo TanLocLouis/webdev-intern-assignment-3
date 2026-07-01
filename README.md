@@ -1,10 +1,6 @@
 # G-Scores
+This project parse student's scores from a `.csv` to Postgre `Supabase` database and provide a web UI to allow student to search thier score by `studentId`.
 
-This is the instruction for web developer intern assignment at [Golden Owl](https://goldenowl.asia). You will build a simple web.
-
-Web template example. Hope you will make it more beautiful !!!
-
-![template example](./screenshots/mockup-ui.png) 
 # Requirements
 1. From the raw data file ([diem_thi_thpt_2024.csv](./dataset/diem_thi_thpt_2024.csv)) save it into the database with the appropriate structure
 
@@ -22,44 +18,42 @@ Web template example. Hope you will make it more beautiful !!!
 - Setup project use Docker.
 - Deploy the application to go live.
 
-# Technical Requirements
+# Techstack
+## Frontend
+- ReactJS
+- TailwindCSS
+- Typescript
 
-### Frontend
-You can use any front-end library/framework like React, Angular, Vue, ... or just simple things with HTML + CSS + Javascript (JQuery).
-- For JS intern use React you need to have: 
-  * React Hooks
-- Fonts (optional);
-  - [https://fonts.google.com/specimen/Rubik?query=Rubik](https://fonts.google.com/specimen/Rubik?query=Rubik)
-- You can use some available interfaces such as: [AdminLTe](https://adminlte.io/), [TailAdmin](https://tailadmin.com/)...
-  
-### Backend: 
-Choose one of your applied back-end libraries/frameworks: Maybe Laravel(PHP), Ruby on Rails, NestJS (NodeJs), Django (Python), unlimited framework... or a structure that you come up with yourselt. 
-- **Mandatory** use of **OOP programming** for managing subjects.
-- Need form validation and logic tightening.
-- For NodeJs, use TypeScript is a plus.
-- Use ORM for interacting with Database.
-- Database: You can use postgreSQL, Mysql, mongoDB... to manage or cache the data. 
+## Backend
+- NodeJS + ExpressJS.
 
-### Deployment
-Some providers allow free deployment for the trial version  (note: Maybe some suppliers will update their policies and prices)
+## Databases
+- Postgre (Supabase).
 
-- Heroku - https://heroku.com - Deploying Front & Backend
-- Vercel (Zeit) - https://vercel.com - Deploying Front & Backend apps at free of cost
-- Fly - https://fly.io - Deploying Front & Backend apps at free of cost
-- Deta - https://deta.sh - Deploying Node.js and Python apps and APIs. They support most web frameworks like Express, Koa, Flask, and FastAPI. They also provide a very fast and powerful NoSQL database for free.
-- Heliohost - https://heliohost.org - PHP, Ruby on rails, perl, django, java(jsp)
-- `...`
-# Submission
+# Installation
+1. First of all, you need to setup your environment variables in `/backend/.env` file
 
-After completing the assignment, please push the source code to remote repository (github/gitlab), then send us the link to your repository.
+```
+DATABASE_URL="postgresql://admin:secret@localhost:5432/gscores"
+PORT=3001
+FRONTEND_URL="http://localhost:5173"
+```
 
-Don't forget to add `README.md` which includes guide to run your project locally and demo link.
+2. In `/backend` root folder. Generate prisma client file
+```
+npm run db:generate
+```
+
+3. Migrate new database schema
+```
+npm run db:migrate
+```
+
+4. Push new schema to Supabase (Postgre)
+```
+npm run db:push
+```
+
+5. 
 
 
-**GOOD LUCK!!!**
-
-![Your Code Work](./screenshots/meme.png)
-
-# Contributors
-
-- Edric Cao (from GO)
