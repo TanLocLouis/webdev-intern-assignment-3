@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: #0a0f1e;
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500
+           text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200
+           shadow-lg shadow-sky-500/25 hover:shadow-sky-400/40 hover:-translate-y-0.5
+           active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+  }
+
+  .nav-link {
+    @apply px-4 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10
+           transition-all duration-200 font-medium text-sm;
+  }
+
+  .nav-link.active {
+    @apply text-sky-400 bg-sky-500/10;
+  }
+
+  .score-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold;
+  }
+
+  .input-field {
+    @apply w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3
+           text-white placeholder-slate-500 focus:outline-none focus:ring-2
+           focus:ring-sky-500/50 focus:border-sky-500/50 transition-all duration-200;
+  }
+}
+
+/* Animated background */
+.hero-bg {
+  background: radial-gradient(ellipse at top, #0ea5e920 0%, transparent 60%),
+              radial-gradient(ellipse at bottom right, #3b82f615 0%, transparent 60%),
+              #0a0f1e;
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 40px rgba(14, 165, 233, 0.15);
+}
+
+/* Score band colors */
+.band-excellent { @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30; }
+.band-good      { @apply bg-blue-500/20 text-blue-400 border border-blue-500/30; }
+.band-average   { @apply bg-amber-500/20 text-amber-400 border border-amber-500/30; }
+.band-poor      { @apply bg-red-500/20 text-red-400 border border-red-500/30; }
+.band-na        { @apply bg-slate-500/20 text-slate-400 border border-slate-500/30; }
+
+/* Rank medals */
+.rank-1 { @apply bg-gradient-to-br from-yellow-400 to-amber-500 text-white; }
+.rank-2 { @apply bg-gradient-to-br from-slate-300 to-slate-400 text-slate-800; }
+.rank-3 { @apply bg-gradient-to-br from-orange-400 to-amber-600 text-white; }
+
+/* Pulse animation for loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #ffffff08 25%, #ffffff15 50%, #ffffff08 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Chart tooltip */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #1e2a3a !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.5); }
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

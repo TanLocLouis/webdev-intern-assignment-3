@@ -5,11 +5,17 @@ const prisma = new PrismaClient();
 
 export class ScoreService {
   async getStudentBySbd(sbd: string): Promise<StudentModel | null> {
-    const student = await prisma.student.findUnique({
-      where: { sbd },
-    });
+    try {
+      const student = await prisma.student.findUnique({
+        where: { sbd },
+      });
+      
+      if (!student) return null;
+      return new StudentModel(student);
+    } catch (error) {
+      console.error('Error fetching student by SBD:', error);
+      throw new Error('Failed to fetch student data');
+    }
 
-    if (!student) return null;
-    return new StudentModel(student);
   }
 }
