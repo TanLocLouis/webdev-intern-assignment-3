@@ -5,7 +5,7 @@ import { parse } from 'csv-parse';
 
 const prisma = new PrismaClient();
 
-const BATCH_SIZE = 1000;
+const BATCH_SIZE = 5000;
 const CSV_PATH = path.resolve(__dirname, '../../dataset/diem_thi_thpt_2024.csv');
 
 // Convert string to float
@@ -14,14 +14,6 @@ function parseScore(val: string): Prisma.Decimal | null {
 
   const n = parseFloat(val.trim());
   return isNaN(n) ? null : new Prisma.Decimal(n);
-}
-
-// Get band base on score number
-function getBand(score: number): string {
-  if (score >= 8) return '>=8';
-  if (score >= 6) return '[6,8)';
-  if (score >= 4) return '[4,6)';
-  return '<4';
 }
 
 // Calculate group A score
@@ -39,70 +31,49 @@ function calculateGroupAScore(student: Record<string, Prisma.Decimal | null>): P
 async function seedStudents(): Promise<void> {
   console.log('Starting student seeding from CSV...');
 
-  const subjects = ['toan', 'ngu_van', 'ngoai_ngu', 'vat_li', 'hoa_hoc', 'sinh_hoc', 'lich_su', 'dia_li', 'gdcd'] as const;
-  const bands = ['>=8', '[6,8)', '[4,6)', '<4'] as const;
-
-  let batch: Prisma.StudentCreateManyInput[] = [];
-  let top_group_a_batch: Prisma.TopGroupACreateManyInput[] = [];
-
+  const queue: { student: Prisma.StudentCreateManyInput; topGroupA: Prisma.TopGroupACreateManyInput }[] = [];
   let totalInserted = 0;
+  let isProcessing = false;
 
   const stream = fs.createReadStream(CSV_PATH).pipe(parse({ columns: true, skip_empty_lines: true }));
 
-  // Insert a batch into DB. Called with stream already paused.
-  const processBatch = async () => {
-    // Insert to score table
-    if (batch.length === 0) return;
-    const current = batch;
-    batch = [];
-    await prisma.student.createMany({ data: current, skipDuplicates: true });
-    totalInserted += current.length;
-    process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
-
-    // Insert to score statistic table
-    // In-memory statistic aggregation for this batch
-    const batchStats: Record<string, Record<string, number>> = {};
-    for (const sub of subjects) {
-      batchStats[sub] = { '>=8': 0, '[6,8)': 0, '[4,6)': 0, '<4': 0 };
-    }
-
-    for (const record of current) {
-      for (const subject of subjects) {
-        const score = record[subject];
-        if (score !== null && score !== undefined) {
-          const band = getBand(Number(score));
-          batchStats[subject][band]++;
-        }
-      }
-    }
-
-    // Incremental database upserts for the batch statistics (max 36 queries per batch)
-    for (const subject of subjects) {
-      for (const band of bands) {
-        const count = batchStats[subject][band];
-        if (count > 0) {
-          await prisma.scoreStatistic.upsert({
-            where: { subject_band: { subject, band } },
-            update: { count: { increment: count } },
-            create: { subject, band, count },
-          });
-        }
-      }
-    }
-
-  };
-  const processTopGroupABatch = async () => {
-    // Insert to top Group A table
-    if (top_group_a_batch.length === 0) return;
-    const current = top_group_a_batch;
-    top_group_a_batch = [];
-    await prisma.topGroupA.createMany({ data: current, skipDuplicates: true });
-  };
-
   await new Promise<void>((resolve, reject) => {
+    // Helper to process queue sequentially
+    const processQueue = async () => {
+      if (isProcessing) return;
+      isProcessing = true;
+
+      try {
+        while (queue.length >= BATCH_SIZE) {
+          const chunk = queue.splice(0, BATCH_SIZE);
+          const students = chunk.map(item => item.student);
+          const topGroupAs = chunk.map(item => item.topGroupA);
+
+          // Run them concurrently for the same chunk to utilize database throughput safely
+          await Promise.all([
+            prisma.student.createMany({ data: students, skipDuplicates: true }),
+            prisma.topGroupA.createMany({ data: topGroupAs, skipDuplicates: true }),
+          ]);
+
+          totalInserted += chunk.length;
+          process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
+        }
+      } catch (err) {
+        stream.destroy();
+        reject(err);
+        return;
+      } finally {
+        isProcessing = false;
+        // Resume stream if queue is drained below batch threshold
+        if (queue.length < BATCH_SIZE) {
+          stream.resume();
+        }
+      }
+    };
+
     stream
       .on('data', (row: Record<string, string>) => {
-        const record: Prisma.StudentCreateManyInput = {
+        const student: Prisma.StudentCreateManyInput = {
           sbd: row['sbd']?.trim() ?? '',
           toan: parseScore(row['toan']),
           ngu_van: parseScore(row['ngu_van']),
@@ -115,7 +86,8 @@ async function seedStudents(): Promise<void> {
           gdcd: parseScore(row['gdcd']),
           ma_ngoai_ngu: row['ma_ngoai_ngu']?.trim() || null,
         };
-        const top_group_a_record: Prisma.TopGroupACreateManyInput = {
+
+        const topGroupA: Prisma.TopGroupACreateManyInput = {
           sbd: row['sbd']?.trim() ?? '',
           toan: parseScore(row['toan']),
           vat_li: parseScore(row['vat_li']),
@@ -127,44 +99,83 @@ async function seedStudents(): Promise<void> {
           }),
         };
 
-        // Skip student if sbd is invalid
-        if (!record.sbd) return;
-        if (!top_group_a_record.sbd) return;
+        if (!student.sbd || !topGroupA.sbd) return;
 
-        // push record into batch
-        batch.push(record);
-        top_group_a_batch.push(top_group_a_record);
+        queue.push({ student, topGroupA });
 
-        if (batch.length >= BATCH_SIZE) {
-          // Pause the stream when the the DB is inserting.
+        if (queue.length >= BATCH_SIZE) {
           stream.pause();
-          processBatch()
-            .then(() => stream.resume())
-            .catch((err: Error) => {
-              stream.destroy();
-              reject(err);
-            });
-
-          stream.pause();
-          processTopGroupABatch()
-            .then(() => stream.resume())
-            .catch((err: Error) => {
-              stream.destroy();
-              reject(err);
-            });
+          processQueue().catch(reject);
         }
       })
       .on('end', async () => {
-        await processBatch(); // Flush remaining
-        await processTopGroupABatch(); // Flush remaining
+        // Wait for any active processing to finish
+        while (isProcessing) {
+          await new Promise(r => setTimeout(r, 100));
+        }
 
-        console.log(`\nStudents seeded: ${totalInserted.toLocaleString()} rows`);
-        resolve();
+        // Process any remaining items
+        try {
+          while (queue.length > 0) {
+            const chunk = queue.splice(0, BATCH_SIZE);
+            const students = chunk.map(item => item.student);
+            const topGroupAs = chunk.map(item => item.topGroupA);
+
+            await Promise.all([
+              prisma.student.createMany({ data: students, skipDuplicates: true }),
+              prisma.topGroupA.createMany({ data: topGroupAs, skipDuplicates: true }),
+            ]);
+
+            totalInserted += chunk.length;
+            process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
+          }
+          console.log(`\nStudents seeded: ${totalInserted.toLocaleString()} rows`);
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
       })
       .on('error', (err) => {
         reject(err);
       });
   });
+}
+
+// Function to calculate and seed score statistics
+async function seedScoreStatistics(): Promise<void> {
+  console.log('\nCalculating score statistics from database...');
+
+  const subjects = ['toan', 'ngu_van', 'ngoai_ngu', 'vat_li', 'hoa_hoc', 'sinh_hoc', 'lich_su', 'dia_li', 'gdcd'] as const;
+
+  const queries = subjects.map(subject => `
+    SELECT 
+      '${subject}' AS subject,
+      CASE 
+        WHEN "${subject}" >= 8 THEN '>=8'
+        WHEN "${subject}" >= 6 THEN '[6,8)'
+        WHEN "${subject}" >= 4 THEN '[4,6)'
+        ELSE '<4'
+      END AS band,
+      COUNT(*)::int AS count
+    FROM students
+    WHERE "${subject}" IS NOT NULL
+    GROUP BY 
+      CASE 
+        WHEN "${subject}" >= 8 THEN '>=8'
+        WHEN "${subject}" >= 6 THEN '[6,8)'
+        WHEN "${subject}" >= 4 THEN '[4,6)'
+        ELSE '<4'
+      END
+  `);
+
+  const unionQuery = queries.join('\nUNION ALL\n');
+
+  const statsData = await prisma.$queryRawUnsafe<{ subject: string; band: string; count: number }[]>(unionQuery);
+
+  console.log('Saving score statistics...');
+  if (statsData.length > 0) {
+    await prisma.scoreStatistic.createMany({ data: statsData });
+  }
 }
 
 async function main(): Promise<void> {
@@ -179,6 +190,7 @@ async function main(): Promise<void> {
 
   // Seed new data
   await seedStudents();
+  await seedScoreStatistics();
   console.log('\nAll seeding complete!');
   await prisma.$disconnect();
 }

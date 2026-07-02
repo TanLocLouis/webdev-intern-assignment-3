@@ -23,21 +23,32 @@ This project parse student's scores from a `.csv` to Postgre `Supabase` database
 - ReactJS
 - TailwindCSS
 - Typescript
+- rechart lib
 
 ## Backend
 - NodeJS + ExpressJS.
+- Typescript
 
 ## Databases
 - Postgre (Supabase).
+- Prisma ORM.
 
 # Installation
+## Database
 1. First of all, you need to setup your environment variables in `/backend/.env` file  
-**NOTE:** Supabase provides many connection methods, some method only works with IPv6 network. Personally, I use `Session pooler` because it works well with my IPv4 network.
-<!-- **ANOTHER NOTE:** Supabase `uptime` is pretty bad, so I might use other Postgre alternatives. -->
+**Option 1:** Supabase provides many connection methods, some methods only work with IPv6 network. Personally, I use `Session pooler` because it works well with my IPv4 network.
+
 ```
 DATABASE_URL="postgresql://admin:secret@localhost:5432/gscores"
 PORT=3001
 FRONTEND_URL="http://localhost:5173"
+```
+
+**Option 2: (Recommend)** Supabase currently has some uptime problems. So I switch to self-hosted my on PostgreSQL on Docker container on a Vultr and it works smoothly. Btw, you just need to put correct Postgres URI string to `.env` file.
+
+- In `/docs/postgres` folder start postgres docker container
+```
+sudo docker-compose up -d
 ```
 
 2. In `/backend` root folder. Generate prisma client file
@@ -47,25 +58,55 @@ npm run db:generate
 
 3. Migrate new database schema
 ```
-npx prisma migrate dev --name add_top_group_a_table
-```
-or
-```
 npm run db:migrate
 ```
 
-4. Push new schema to Supabase (Postgre)
-```
-npm run db:push
-```
-
-5. (Optional, you do not need to do this if your database already has data, this script also flush all old data before seed) Seed data to database from (.csv)
-
+**Optional:**
+Seed data to database from (.csv) (`Optional`, you do not need to do this if your database already has data, this script also flush all old data before seeding)   
+**NOTE:** It takes about 50 minutes to seed all data from `.csv` to `Postgres`
 ```
 npm run db:seed
 ```
 
+## Backend
+1. In `/backend` folder. Set `.env` variables
+```
+DATABASE_URL=postgresql://username:password@host:port/database
+PORT=3001
+FRONTEND_URL="http://localhost:5173"
+```
+
+2. To start backend 
+```
+npm run dev
+```
+
+## Frontend
+1. In `/frontend` folder. Set `.env` variables
+```
+VITE_API_URL=http://localhost:3001
+```
+2. To start frontend
+```
+npm run dev
+```
+
 # Version
+
+## v1.3.0 - Statistics - 2026-07-02 
+- Schema for Statistics. 
+- API for Statistics.
+- UI for Statistics.
+
+## v1.2.0 - Top Group A - 2026-07-02 
+- Schema for Top Group A.
+- API for Top Group A. 
+- UI for Top Group A. 
+
+## v1.1.0 - Score - 2026-07-02 
+- Schema for Scores.
+- API for Scores.
+- UI for Scores.
 
 ## v1.0.0 - Init - 2026-07-01
 - Init backend folder structure.

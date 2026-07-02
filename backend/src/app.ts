@@ -9,7 +9,8 @@ export function createApp(): Application {
 
   // Middlewares
   app.use(cors({
-    origin: process.env.FRONTEND_URL ?? '*',
+    // [NOTE]: I disable cors for testing
+    origin: '*',
     methods: ['GET'],
     allowedHeaders: ['Content-Type'],
   }));
