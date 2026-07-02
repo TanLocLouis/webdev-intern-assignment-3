@@ -1,6 +1,8 @@
 # G-Scores
 This project parse student's scores from a `.csv` to Postgre `Supabase` database and provide a web UI to allow student to search thier score by `studentId`.
 
+Demo: https://webdev-intern-assignment-3-6noe.vercel.app
+
 # Requirements
 1. From the raw data file ([diem_thi_thpt_2024.csv](./dataset/diem_thi_thpt_2024.csv)) save it into the database with the appropriate structure
 
