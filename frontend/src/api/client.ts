@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { ApiResponse, StudentResult } from '../types'
+import type { ApiResponse, StudentResult, TopGroupAStudent } from '../types'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
 
@@ -13,6 +13,11 @@ const api = axios.create({
 
 export const getStudentScores = async (sbd: string): Promise<StudentResult> => {
   const { data } = await api.get<ApiResponse<StudentResult>>(`/scores/${sbd}`)
+  return data.data
+}
+
+export const getTopGroupA = async (): Promise<TopGroupAStudent[]> => {
+  const { data } = await api.get<ApiResponse<TopGroupAStudent[]>>('/top-group-a')
   return data.data
 }
 

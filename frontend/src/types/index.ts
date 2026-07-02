@@ -23,13 +23,10 @@ export interface SubjectStatistic {
   bands: BandCount[];
 }
 
-export interface TopGroupAEntry {
-  rank: number;
+export interface TopGroupAStudent {
   sbd: string;
-  toan: number;
-  vat_li: number;
-  hoa_hoc: number;
   total_score: number;
+  scores: ScoreEntry[];
 }
 
 export interface ApiResponse<T> {

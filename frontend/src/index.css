@@ -74,11 +74,6 @@
 .band-poor      { @apply bg-red-500/20 text-red-400 border border-red-500/30; }
 .band-na        { @apply bg-slate-500/20 text-slate-400 border border-slate-500/30; }
 
-/* Rank medals */
-.rank-1 { @apply bg-gradient-to-br from-yellow-400 to-amber-500 text-white; }
-.rank-2 { @apply bg-gradient-to-br from-slate-300 to-slate-400 text-slate-800; }
-.rank-3 { @apply bg-gradient-to-br from-orange-400 to-amber-600 text-white; }
-
 /* Pulse animation for loading */
 @keyframes shimmer {
   0% { background-position: -200% 0; }

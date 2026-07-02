@@ -116,6 +116,8 @@ async function seedStudents(): Promise<void> {
               stream.destroy();
               reject(err);
             });
+
+          stream.pause();
           processTopGroupABatch()
             .then(() => stream.resume())
             .catch((err: Error) => {
