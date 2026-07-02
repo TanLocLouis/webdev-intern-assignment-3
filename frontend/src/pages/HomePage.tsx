@@ -16,7 +16,7 @@ export default function HomePage() {
 
     // Validate: must be exactly 8 digits
     if (!/^\d{8}$/.test(trimmed)) {
-      setError('Số báo danh phải gồm đúng 8 chữ số.')
+      setError('Student ID must consist of exactly 8 digits.')
       setResult(null)
       return
     }
@@ -38,12 +38,12 @@ export default function HomePage() {
       if (err && typeof err === 'object' && 'response' in err) {
         const resp = err as { response?: { status?: number; data?: { message?: string } } }
         if (resp.response?.status === 404) {
-          setError('Không tìm thấy thí sinh với số báo danh này.')
+          setError('Not found. Please check the student ID and try again.')
         } else {
-          setError(resp.response?.data?.message ?? 'Đã xảy ra lỗi khi truy vấn. Vui lòng thử lại.')
+          setError(resp.response?.data?.message ?? 'An error occurred while querying. Please try again.')
         }
       } else {
-        setError('Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại.')
+        setError('Unable to connect to the server. Please check your connection.')
       }
     } finally {
       setLoading(false)
@@ -67,7 +67,7 @@ export default function HomePage() {
             <span className="gradient-text">G-Scores</span>
           </h1>
           <p className="text-slate-400 text-base sm:text-lg max-w-md mx-auto leading-relaxed">
-            Tra cứu điểm thi THPT Quốc gia 2024
+            Search student scores in the 2024 Vietnamese National High School Exam.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function HomePage() {
           <div className="glass-card p-2 glow-blue flex items-center gap-2">
             {/* Search icon */}
             <div className="pl-3 text-slate-500">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" fill="white" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" fill="white" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
             </div>
             <input
               id="sbd-input"
@@ -89,7 +89,7 @@ export default function HomePage() {
                 if (error) setError(null)
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Nhập số báo danh (VD: 01000093)"
+              placeholder="Enter student ID (e.g., 01000093)"
               className="flex-1 bg-transparent border-none outline-none text-white placeholder-slate-500 py-3 px-2 text-base sm:text-lg font-medium"
             />
             <button
@@ -104,10 +104,10 @@ export default function HomePage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Đang tìm...
+                  Searching...
                 </>
               ) : (
-                'Tra cứu'
+                'Search'
               )}
             </button>
           </div>

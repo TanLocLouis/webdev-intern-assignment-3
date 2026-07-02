@@ -28,10 +28,10 @@ export default function TopGroupAPage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
-            Top 10 Khối A
+            Top 10 in Group A
           </h1>
           <p className="text-slate-400 text-sm sm:text-base">
-            Toán · Vật Lí · Hóa Học — Tổng điểm cao nhất kỳ thi THPT 2024
+            Mathematics · Physics · Chemistry — Highest Scores
           </p>
         </div>
 
