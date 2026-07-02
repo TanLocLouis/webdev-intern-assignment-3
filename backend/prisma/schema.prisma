@@ -38,3 +38,13 @@ model TopGroupA {
   @@index([sbd])
   @@map("top_group_a")
 }
+
+model ScoreStatistic {
+  id        Int      @id @default(autoincrement())
+  subject   String   @db.VarChar(20)
+  band      String   @db.VarChar(10)
+  count     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  @@unique([subject, band])
+  @@map("score_statistics")
+}

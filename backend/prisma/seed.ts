@@ -6,14 +6,7 @@ import { parse } from 'csv-parse';
 const prisma = new PrismaClient();
 
 const BATCH_SIZE = 1000;
-// Transient Prisma error codes worth retrying
-const RETRYABLE_CODES = ['P1001', 'P1002', 'P1008', 'P1017'];
-const MAX_RETRIES = 5;
-
 const CSV_PATH = path.resolve(__dirname, '../../dataset/diem_thi_thpt_2024.csv');
-
-const SUBJECTS = ['toan', 'ngu_van', 'ngoai_ngu', 'vat_li', 'hoa_hoc', 'sinh_hoc', 'lich_su', 'dia_li', 'gdcd'] as const;
-const BANDS = ['>=8', '[6,8)', '[4,6)', '<4'] as const;
 
 // Convert string to float
 function parseScore(val: string): Prisma.Decimal | null {
@@ -46,6 +39,9 @@ function calculateGroupAScore(student: Record<string, Prisma.Decimal | null>): P
 async function seedStudents(): Promise<void> {
   console.log('Starting student seeding from CSV...');
 
+  const subjects = ['toan', 'ngu_van', 'ngoai_ngu', 'vat_li', 'hoa_hoc', 'sinh_hoc', 'lich_su', 'dia_li', 'gdcd'] as const;
+  const bands = ['>=8', '[6,8)', '[4,6)', '<4'] as const;
+
   let batch: Prisma.StudentCreateManyInput[] = [];
   let top_group_a_batch: Prisma.TopGroupACreateManyInput[] = [];
 
@@ -55,20 +51,52 @@ async function seedStudents(): Promise<void> {
 
   // Insert a batch into DB. Called with stream already paused.
   const processBatch = async () => {
+    // Insert to score table
     if (batch.length === 0) return;
     const current = batch;
     batch = [];
     await prisma.student.createMany({ data: current, skipDuplicates: true });
     totalInserted += current.length;
     process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
+
+    // Insert to score statistic table
+    // In-memory statistic aggregation for this batch
+    const batchStats: Record<string, Record<string, number>> = {};
+    for (const sub of subjects) {
+      batchStats[sub] = { '>=8': 0, '[6,8)': 0, '[4,6)': 0, '<4': 0 };
+    }
+
+    for (const record of current) {
+      for (const subject of subjects) {
+        const score = record[subject];
+        if (score !== null && score !== undefined) {
+          const band = getBand(Number(score));
+          batchStats[subject][band]++;
+        }
+      }
+    }
+
+    // Incremental database upserts for the batch statistics (max 36 queries per batch)
+    for (const subject of subjects) {
+      for (const band of bands) {
+        const count = batchStats[subject][band];
+        if (count > 0) {
+          await prisma.scoreStatistic.upsert({
+            where: { subject_band: { subject, band } },
+            update: { count: { increment: count } },
+            create: { subject, band, count },
+          });
+        }
+      }
+    }
+
   };
   const processTopGroupABatch = async () => {
+    // Insert to top Group A table
     if (top_group_a_batch.length === 0) return;
     const current = top_group_a_batch;
     top_group_a_batch = [];
     await prisma.topGroupA.createMany({ data: current, skipDuplicates: true });
-    totalInserted += current.length;
-    process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
   };
 
   await new Promise<void>((resolve, reject) => {
@@ -129,8 +157,8 @@ async function seedStudents(): Promise<void> {
       .on('end', async () => {
         await processBatch(); // Flush remaining
         await processTopGroupABatch(); // Flush remaining
-        console.log(`\nStudents seeded: ${totalInserted.toLocaleString()} rows`);
 
+        console.log(`\nStudents seeded: ${totalInserted.toLocaleString()} rows`);
         resolve();
       })
       .on('error', (err) => {
@@ -146,6 +174,7 @@ async function main(): Promise<void> {
   console.log('Flushing existing students table...');
   await prisma.student.deleteMany();
   await prisma.topGroupA.deleteMany();
+  await prisma.scoreStatistic.deleteMany();
   console.log('Table flushed.\n');
 
   // Seed new data
