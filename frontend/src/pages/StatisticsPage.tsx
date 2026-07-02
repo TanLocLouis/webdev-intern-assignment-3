@@ -35,10 +35,10 @@ export default function StatisticsPage() {
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 mb-2">
               Statistics
             </h1>
-            <p className="text-slate-400 text-sm sm:text-base">
+            <p className="text-slate-600 text-sm sm:text-base font-medium">
               Statistics of the number of students with scores in the above 4 levels by subjects
             </p>
           </div>
@@ -47,12 +47,12 @@ export default function StatisticsPage() {
           {!loading && !error && statistics.length > 0 && (
             <div className="flex items-center gap-4">
               <div className="glass-card px-4 py-3 min-w-[120px]">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1">subjects</p>
-                <p className="text-xl font-bold text-white leading-tight">{totalSubjects}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1 font-semibold">subjects</p>
+                <p className="text-xl font-bold text-slate-800 leading-tight">{totalSubjects}</p>
               </div>
               <div className="glass-card px-4 py-3 min-w-[150px]">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1">Student</p>
-                <p className="text-xl font-bold text-sky-400 leading-tight">{totalTests.toLocaleString()}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1 font-semibold">Student</p>
+                <p className="text-xl font-bold text-sky-600 leading-tight">{totalTests.toLocaleString()}</p>
               </div>
             </div>
           )}
@@ -60,7 +60,7 @@ export default function StatisticsPage() {
 
         {/* Error State */}
         {error && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-8">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-5/80 border border-red-200 text-red-700 text-sm mb-8 font-medium">
             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>

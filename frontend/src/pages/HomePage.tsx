@@ -66,7 +66,7 @@ export default function HomePage() {
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
             <span className="gradient-text">G-Scores</span>
           </h1>
-          <p className="text-slate-400 text-base sm:text-lg max-w-md mx-auto leading-relaxed">
+          <p className="text-slate-600 text-base sm:text-lg max-w-md mx-auto leading-relaxed font-medium">
             Search student scores in the 2024 Vietnamese National High School Exam.
           </p>
         </div>
@@ -75,8 +75,8 @@ export default function HomePage() {
         <div className="relative z-10 w-full max-w-xl">
           <div className="glass-card p-2 glow-blue flex items-center gap-2">
             {/* Search icon */}
-            <div className="pl-3 text-slate-500">
-              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" fill="white" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
+            <div className="pl-3 text-slate-400">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" fill="currentColor" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" /></svg>
             </div>
             <input
               id="sbd-input"
@@ -90,7 +90,7 @@ export default function HomePage() {
               }}
               onKeyDown={handleKeyDown}
               placeholder="Enter student ID (e.g., 01000093)"
-              className="flex-1 bg-transparent border-none outline-none text-white placeholder-slate-500 py-3 px-2 text-base sm:text-lg font-medium"
+              className="flex-1 bg-transparent border-none outline-none text-slate-800 placeholder-slate-400 py-3 px-2 text-base sm:text-lg font-medium"
             />
             <button
               id="search-btn"
@@ -114,7 +114,7 @@ export default function HomePage() {
 
           {/* Error message */}
           {error && (
-            <div className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm animate-[fadeIn_0.2s_ease]">
+            <div className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 text-sm animate-[fadeIn_0.2s_ease] font-medium">
               <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -132,13 +132,13 @@ export default function HomePage() {
             <div className="glass-card p-6 sm:p-8 mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <p className="text-slate-500 text-xs uppercase mb-1">Số báo danh</p>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-wide">{result.sbd}</h2>
+                  <p className="text-slate-400 text-xs uppercase mb-1 font-semibold tracking-wider">Số báo danh</p>
+                  <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-wide">{result.sbd}</h2>
                 </div>
                 <div className="flex items-center gap-4">
                   {result.ma_ngoai_ngu && (
-                    <div className="px-3 py-1.5 rounded-lg bg-sky-500/10 border border-sky-500/20">
-                      <span className="text-sky-400 text-sm font-semibold">🌐 {result.ma_ngoai_ngu}</span>
+                    <div className="px-3 py-1.5 rounded-lg bg-sky-50 border border-sky-200/80">
+                      <span className="text-sky-700 text-sm font-bold">🌐 {result.ma_ngoai_ngu}</span>
                     </div>
                   )}
                 </div>

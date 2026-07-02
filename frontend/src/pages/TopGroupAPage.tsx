@@ -27,17 +27,17 @@ export default function TopGroupAPage() {
       <div className="max-w-4xl mx-auto">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 mb-2">
             Top 10 in Group A
           </h1>
-          <p className="text-slate-400 text-sm sm:text-base">
+          <p className="text-slate-600 text-sm sm:text-base font-medium">
             Mathematics · Physics · Chemistry — Highest Scores
           </p>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm mb-6">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-50/80 border border-red-200 text-red-700 text-sm mb-6 font-medium">
             <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
