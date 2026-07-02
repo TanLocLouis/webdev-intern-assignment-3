@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Student {
@@ -24,4 +24,17 @@ model Student {
 
   @@index([sbd])
   @@map("students")
+}
+
+model TopGroupA {
+  id          Int      @id @default(autoincrement())
+  sbd         String   @unique @db.Char(8)
+  toan        Decimal? @db.Decimal(4, 2)
+  vat_li      Decimal? @db.Decimal(4, 2)
+  hoa_hoc     Decimal? @db.Decimal(4, 2)
+  total_score Decimal? @db.Decimal(4, 2)
+  created_at  DateTime @default(now())
+
+  @@index([sbd])
+  @@map("top_group_a")
 }

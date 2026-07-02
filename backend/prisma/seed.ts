@@ -31,11 +31,24 @@ function getBand(score: number): string {
   return '<4';
 }
 
+// Calculate group A score
+function calculateGroupAScore(student: Record<string, Prisma.Decimal | null>): Prisma.Decimal | null {
+  const toan = student['toan'];
+  const vat_li = student['vat_li'];
+  const hoa_hoc = student['hoa_hoc'];
+
+  if (toan === null || vat_li === null || hoa_hoc === null) return null;
+
+  return toan.add(vat_li).add(hoa_hoc);
+}
+
 // Main function to seed student
 async function seedStudents(): Promise<void> {
   console.log('Starting student seeding from CSV...');
 
   let batch: Prisma.StudentCreateManyInput[] = [];
+  let top_group_a_batch: Prisma.TopGroupACreateManyInput[] = [];
+
   let totalInserted = 0;
 
   const stream = fs.createReadStream(CSV_PATH).pipe(parse({ columns: true, skip_empty_lines: true }));
@@ -49,21 +62,13 @@ async function seedStudents(): Promise<void> {
     totalInserted += current.length;
     process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
   };
-
-  // Retry wrapper: retries processBatch on transient connection errors
-  const processBatchWithRetry = async (attempt = 1): Promise<void> => {
-    try {
-      await processBatch();
-    } catch (err) {
-      const code = (err as Prisma.PrismaClientKnownRequestError).code;
-      if (RETRYABLE_CODES.includes(code) && attempt <= MAX_RETRIES) {
-        const delay = Math.min(1000 * 2 ** attempt, 30000); // exponential backoff, max 30s
-        process.stdout.write(`\n   Connection error (${code}), retrying in ${delay / 1000}s... (attempt ${attempt}/${MAX_RETRIES})`);
-        await new Promise((r) => setTimeout(r, delay));
-        return processBatchWithRetry(attempt + 1);
-      }
-      throw err; // non-retryable or max retries exhausted
-    }
+  const processTopGroupABatch = async () => {
+    if (top_group_a_batch.length === 0) return;
+    const current = top_group_a_batch;
+    top_group_a_batch = [];
+    await prisma.topGroupA.createMany({ data: current, skipDuplicates: true });
+    totalInserted += current.length;
+    process.stdout.write(`\r   Inserted: ${totalInserted.toLocaleString()} rows`);
   };
 
   await new Promise<void>((resolve, reject) => {
@@ -82,17 +87,36 @@ async function seedStudents(): Promise<void> {
           gdcd: parseScore(row['gdcd']),
           ma_ngoai_ngu: row['ma_ngoai_ngu']?.trim() || null,
         };
+        const top_group_a_record: Prisma.TopGroupACreateManyInput = {
+          sbd: row['sbd']?.trim() ?? '',
+          toan: parseScore(row['toan']),
+          vat_li: parseScore(row['vat_li']),
+          hoa_hoc: parseScore(row['hoa_hoc']),
+          total_score: calculateGroupAScore({
+            toan: parseScore(row['toan']),
+            vat_li: parseScore(row['vat_li']),
+            hoa_hoc: parseScore(row['hoa_hoc']),
+          }),
+        };
 
         // Skip student if sbd is invalid
         if (!record.sbd) return;
+        if (!top_group_a_record.sbd) return;
 
         // push record into batch
         batch.push(record);
+        top_group_a_batch.push(top_group_a_record);
 
         if (batch.length >= BATCH_SIZE) {
           // Pause the stream when the the DB is inserting.
           stream.pause();
-          processBatchWithRetry()
+          processBatch()
+            .then(() => stream.resume())
+            .catch((err: Error) => {
+              stream.destroy();
+              reject(err);
+            });
+          processTopGroupABatch()
             .then(() => stream.resume())
             .catch((err: Error) => {
               stream.destroy();
@@ -101,7 +125,8 @@ async function seedStudents(): Promise<void> {
         }
       })
       .on('end', async () => {
-        await processBatchWithRetry(); // Flush remaining
+        await processBatch(); // Flush remaining
+        await processTopGroupABatch(); // Flush remaining
         console.log(`\nStudents seeded: ${totalInserted.toLocaleString()} rows`);
 
         resolve();
@@ -118,6 +143,7 @@ async function main(): Promise<void> {
   // Clear old data
   console.log('Flushing existing students table...');
   await prisma.student.deleteMany();
+  await prisma.topGroupA.deleteMany();
   console.log('Table flushed.\n');
 
   // Seed new data
