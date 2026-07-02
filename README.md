@@ -46,6 +46,10 @@ npm run db:generate
 
 3. Migrate new database schema
 ```
+npx prisma migrate dev --name add_top_group_a_table
+```
+or
+```
 npm run db:migrate
 ```
 

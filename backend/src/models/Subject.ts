@@ -102,6 +102,13 @@ export const ALL_SUBJECTS: Subject[] = [
   new CivicSubject(),
 ];
 
+// Registry of all group A subjects
+export const ALL_GROUP_A_SUBJECTS: Subject[] = [
+  new MathSubject(),
+  new PhysicsSubject(),
+  new ChemistrySubject(),
+];
+
 // Get Subject by its column name
 export const subjectByColumnName = (col: string): Subject | undefined =>
   ALL_SUBJECTS.find((s) => s.columnName === col);
