@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    image: node:20-alpine
+    container_name: express_ts_backend
+    working_dir: /app
+    ports:
+      - "3001:3001" # Map container port to host port
+    volumes:
+      - .:/app # Mount your whole project directory into the container
+      - /app/node_modules # Anonymous volume to prevent host node_modules from overriding container node_modules
+    environment:
+      - NODE_ENV=development
+    networks:
+      - external-net
+    command: sh -c "apk add --no-cache openssl && npm install && npx tsx watch ./src/index.ts"
+
+networks:
+  external-net:
+    external: true
+    name: gscores # Points to the exact same manual network

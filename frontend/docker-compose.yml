@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_vite
+    ports:
+      - "80:80"
+    volumes:
+      - ./tools/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./dist:/usr/share/nginx/html:ro
+    networks:
+      - external-net
+    restart: unless-stopped
+
+networks:
+  external-net:
+    external: true
+    name: gscores # Points to the exact same manual network

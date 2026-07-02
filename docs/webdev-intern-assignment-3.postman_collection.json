@@ -1,0 +1,150 @@
+{
+  "info": {
+    "_postman_id": "39d92762-fcce-4c2f-9b79-4ebf00a766d6",
+    "name": "webdev-intern-assignment-3",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49650897",
+    "_collection_link": "https://go.postman.co/collection/49650897-39d92762-fcce-4c2f-9b79-4ebf00a766d6?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Get Health",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{vault:ACCESS_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Idempotency-Key",
+            "value": "{{idempotencyKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"paymentMethod\": \"stripe\",\n    \"data\":[\n        {\n            \"concertId\": \"1c098bed-8686-4904-8b74-3df150ff035c\",\n            \"ticketTypeId\": \"2ff664ec-6760-4df9-adcf-2d022c36770e\",\n            \"quantity\": 1\n        },\n        {\n            \"concertId\": \"1c098bed-8686-4904-8b74-3df150ff035c\",\n            \"ticketTypeId\": \"b27c2a3b-9ea5-4ec0-8666-439026f7e2e5\",\n            \"quantity\": 1\n        }\n    ]\n}"
+        },
+        "url": {
+          "raw": "localhost:3001/api/v1/health",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "v1",
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Scores",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:3001/api/v1/scores/01000741",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "v1",
+            "scores",
+            "01000741"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Statistics",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "localhost:3001/api/v1/statistics?subject=sinh_hoc",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "v1",
+            "statistics"
+          ],
+          "query": [
+            {
+              "key": "subject",
+              "value": "sinh_hoc"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Top Group A",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{vault:ACCESS_TOKEN}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Idempotency-Key",
+            "value": "{{idempotencyKey}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"paymentMethod\": \"stripe\",\n    \"data\":[\n        {\n            \"concertId\": \"1c098bed-8686-4904-8b74-3df150ff035c\",\n            \"ticketTypeId\": \"2ff664ec-6760-4df9-adcf-2d022c36770e\",\n            \"quantity\": 1\n        },\n        {\n            \"concertId\": \"1c098bed-8686-4904-8b74-3df150ff035c\",\n            \"ticketTypeId\": \"b27c2a3b-9ea5-4ec0-8666-439026f7e2e5\",\n            \"quantity\": 1\n        }\n    ]\n}"
+        },
+        "url": {
+          "raw": "localhost:3001/api/v1/top-group-a",
+          "host": [
+            "localhost"
+          ],
+          "port": "3001",
+          "path": [
+            "api",
+            "v1",
+            "top-group-a"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

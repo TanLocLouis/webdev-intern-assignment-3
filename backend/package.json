@@ -19,6 +19,7 @@
     "csv-parse": "^7.0.0",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "tsc": "^2.0.4",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -28,6 +29,6 @@
     "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.9.3"
   }
 }

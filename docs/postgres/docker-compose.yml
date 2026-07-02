@@ -6,10 +6,17 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: vultr
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: vultr
     ports:
       - "5432:5432"
     volumes:
       - ./data:/var/lib/postgresql/data
-    restart: unless-stopped 
+    restart: unless-stopped
+    networks:
+      - external-net
+
+networks:
+  external-net:
+    external: true
+    name: gscores # Points to the exact same manual network
