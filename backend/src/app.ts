@@ -2,6 +2,7 @@ import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import scoreRoutes from './routes/scores';
 import topGroupARoutes from './routes/topGroupARoutes';
+import statisticsRoutes from './routes/statisticsRoutes';
 
 export function createApp(): Application {
   const app = express();
@@ -22,6 +23,7 @@ export function createApp(): Application {
   // Routes
   app.use('/api/v1/scores', scoreRoutes);
   app.use('/api/v1/top-group-a', topGroupARoutes);
+  app.use('/api/v1/statistics', statisticsRoutes);
 
   // 404 Route
   app.use((_req: Request, res: Response) => {
