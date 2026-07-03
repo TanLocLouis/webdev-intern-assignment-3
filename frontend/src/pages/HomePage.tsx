@@ -15,7 +15,7 @@ export default function HomePage() {
     const trimmed = sbd.trim()
 
     // Validate: must be exactly 8 digits
-    if (!/^\d{8}$/.test(trimmed)) {
+    if (!/^\d+$/.test(trimmed)) {
       setError('Student ID must consist of exactly 8 digits.')
       setResult(null)
       return

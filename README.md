@@ -67,7 +67,7 @@ npm run db:migrate
 
 **Optional:**
 Seed data to database from (.csv) (`Optional`, you do not need to do this if your database already has data, this script also flush all old data before seeding)   
-**NOTE:** It takes about 50 minutes to seed all data from `.csv` to `Postgres`
+**NOTE:** For me, it takes about `10 minutes` to seed all data from using `3` concurrent connections, it depend on your database server hardwares. To increase seed speed, you can modify connection `limit` in URI and `BATCH_SIZE` in `seed.ts`.
 ```
 npm run db:seed
 ```

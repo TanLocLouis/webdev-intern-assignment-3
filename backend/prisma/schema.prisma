@@ -8,43 +8,37 @@ datasource db {
 }
 
 model Student {
-  id          Int      @id @default(autoincrement())
-  sbd         String   @unique @db.Char(8)
-  toan        Decimal? @db.Decimal(4, 2)
-  ngu_van     Decimal? @db.Decimal(4, 2)
-  ngoai_ngu   Decimal? @db.Decimal(4, 2)
-  vat_li      Decimal? @db.Decimal(4, 2)
-  hoa_hoc     Decimal? @db.Decimal(4, 2)
-  sinh_hoc    Decimal? @db.Decimal(4, 2)
-  lich_su     Decimal? @db.Decimal(4, 2)
-  dia_li      Decimal? @db.Decimal(4, 2)
-  gdcd        Decimal? @db.Decimal(4, 2)
-  ma_ngoai_ngu String? @db.VarChar(4)
-  created_at  DateTime @default(now())
+  id                  BigInt   @id @default(autoincrement())
+  registration_number String   @unique @db.VarChar(20)
+  ma_ngoai_ngu        String?  @db.VarChar(4)
+  created_at          DateTime @default(now()) @map("created_at")
+  updated_at          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  @@index([sbd])
+  scores              Score[]
+
+  @@index([registration_number])
   @@map("students")
 }
 
-model TopGroupA {
-  id          Int      @id @default(autoincrement())
-  sbd         String   @unique @db.Char(8)
-  toan        Decimal? @db.Decimal(4, 2)
-  vat_li      Decimal? @db.Decimal(4, 2)
-  hoa_hoc     Decimal? @db.Decimal(4, 2)
-  total_score Decimal? @db.Decimal(4, 2)
-  created_at  DateTime @default(now())
+model Subject {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @db.VarChar(50)
+  code  String  @unique @db.VarChar(10)
 
-  @@index([sbd])
-  @@map("top_group_a")
+  scores Score[]
+
+  @@map("subjects")
 }
 
-model ScoreStatistic {
-  id        Int      @id @default(autoincrement())
-  subject   String   @db.VarChar(20)
-  band      String   @db.VarChar(10)
-  count     Int      @default(0)
-  createdAt DateTime @default(now()) @map("created_at")
-  @@unique([subject, band])
-  @@map("score_statistics")
+model Score {
+  id         BigInt  @id @default(autoincrement())
+  student_id BigInt  @map("student_id")
+  subject_id Int     @map("subject_id")
+  score      Decimal @db.Decimal(4, 2)
+
+  student Student @relation(fields: [student_id], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subject_id], references: [id], onDelete: Cascade)
+
+  @@unique([student_id, subject_id], name: "unique_student_subject")
+  @@map("scores")
 }
