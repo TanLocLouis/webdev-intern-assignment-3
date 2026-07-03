@@ -7,15 +7,21 @@ export class ScoreService {
   async getStudentBySbd(sbd: string): Promise<StudentModel | null> {
     try {
       const student = await prisma.student.findUnique({
-        where: { sbd },
+        where: { registration_number: sbd },
+        include: {
+          scores: {
+            include: {
+              subject: true,
+            },
+          },
+        },
       });
       
       if (!student) return null;
       return new StudentModel(student);
     } catch (error) {
-      console.error('Error fetching student by SBD:', error);
+      console.error('Error fetching student by registration number:', error);
       throw new Error('Failed to fetch student data');
     }
-
   }
 }

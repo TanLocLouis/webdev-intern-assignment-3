@@ -1,26 +1,5 @@
 import type { ScoreEntry } from '../types'
 
-// Map score band to CSS class + label
-function bandLabel(band: string): string {
-  switch (band) {
-    case '>=8':   return 'Giỏi'
-    case '[6,8)': return 'Khá'
-    case '[4,6)': return 'Trung Bình'
-    case '<4':    return 'Yếu'
-    default:      return 'Không thi'
-  }
-}
-
-function bandClass(band: string): string {
-  switch (band) {
-    case '>=8':   return 'band-excellent'
-    case '[6,8)': return 'band-good'
-    case '[4,6)': return 'band-average'
-    case '<4':    return 'band-poor'
-    default:      return 'band-na'
-  }
-}
-
 // Score Card
 function ScoreCard({ score }: { score: ScoreEntry }) {
   const notTaken = score.score === null
@@ -46,11 +25,6 @@ function ScoreCard({ score }: { score: ScoreEntry }) {
             </p>
           </div>
         </div>
-        {!notTaken && (
-          <span className={`score-badge ${bandClass(score.band)}`}>
-            {bandLabel(score.band)}
-          </span>
-        )}
       </div>
     </div>
   )

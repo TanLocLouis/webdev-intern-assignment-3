@@ -12,8 +12,8 @@ const prisma = new PrismaClient({
   }
 });
 
-const BATCH_SIZE = 5000;
-const CONCURRENCY = 3;
+const BATCH_SIZE = 10000;
+const CONCURRENCY = 1;
 const CSV_PATH = path.resolve(__dirname, '../../dataset/diem_thi_thpt_2024.csv');
 
 // Convert string to float
