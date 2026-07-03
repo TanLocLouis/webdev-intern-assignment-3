@@ -5,40 +5,76 @@ Demo: https://webdev-intern-assignment-3-6noe.vercel.app
 
 ![](./docs/Screenshot_20260703_095759.png)
 
-# Requirements
-1. From the raw data file ([diem_thi_thpt_2024.csv](./dataset/diem_thi_thpt_2024.csv)) save it into the database with the appropriate structure
 
-2. Your application should have at least features in [Must have](#must-have), things in [Nice to have](#nice-to-have) is optional (but yeah, it's attractive if you have).
-
-### Must have:
-- The conversion of raw data into the database must be coded and located in this source code. (**hint**: recommend use migration and seeder)
-- Write a feature to check score from registration number input
-- Write a feature report. There will be 4 levels including: >=8 points, 8 points > && >=6 points, 6 points > && >= 4 points, < 4 points
-    - Statistics of the number of students with scores in the above 4 levels by subjects. (Chart)
-- List top 10 students of group A including (math, physics, chemistry)
-### Nice to have:
-
-- Responsive design (look good on all devices: desktops, tablets & mobile phones).
-- Setup project use Docker.
-- Deploy the application to go live.
+## Features
+- **Score Lookup:** Check scores from registration number input.
+- **Report**: Interactive charts to visuallize score data.
+- **Top 10 students of group A**: Top 10 students in Math, Physics, and Chemistry.
+- **Responsive design**: Look good on all devices: desktops, tablets & mobile phones.
 
 # Techstack
 ## Frontend
 - ReactJS
 - TailwindCSS
 - Typescript
-- rechart lib
+- Recharts
 
 ## Backend
 - NodeJS + ExpressJS.
 - Typescript
 
+
 ## Databases
 - Postgre (Supabase).
 - Prisma ORM.
 
+# Project Structure
+```
+web/
+├── dataset/                    # Raw CSV exam score dataset
+├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma       # Normalized database schema
+│   │   └── seed.ts             # Sequential streaming database seeder
+│   ├── src/
+│   │   ├── index.ts            # Entrypoint with global crash protection
+│   │   ├── app.ts              # Express App setup & middleware
+│   │   ├── controllers/        # Route controllers
+│   │   ├── routes/             # Express routes
+│   │   ├── services/           # DB queries with service-level caching
+│   │   ├── models/             # Student, Subject, and Score models
+│   │   └── validators/         # Input validators using Zod
+│   └── package.json
+└── frontend/
+    ├── src/
+    │   ├── components/         # Search, Stats Chart, and Leaderboard components
+    │   ├── App.tsx             # Main dashboard layout
+    │   └── main.tsx
+    └── package.json
+```
+
 # Installation
-## Database
+
+## Docker Compose (Recommended)
+You can run the entire stack (PostgreSQL database, Node.js API, and Vite React frontend) with a single command:
+
+1. **Start all services**:
+   ```bash
+   docker-compose up -d
+   ```
+2. **Seed the database (Optional)**:
+   Ensure you have the raw CSV dataset in `dataset/diem_thi_thpt_2024.csv`, then run the database seeder inside the backend container:
+   ```bash
+   docker-compose exec backend npm run db:seed
+   ```
+3. **Access the application**:
+   - Frontend Dashboard: [http://localhost:5173](http://localhost:5173)
+   - Backend Health Status: [http://localhost:3001/api/v1/health](http://localhost:3001/api/v1/health)
+
+---
+
+## Manual Installation (Local)
+### Database
 1. First of all, you need to setup your environment variables in `/backend/.env` file  
 **Option 1:** Supabase provides many connection methods, some methods only work with IPv6 network. Personally, I use `Session pooler` because it works well with my IPv4 network.
 
