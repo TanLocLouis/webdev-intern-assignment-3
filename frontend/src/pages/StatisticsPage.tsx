@@ -51,7 +51,7 @@ export default function StatisticsPage() {
                 <p className="text-xl font-bold text-slate-800 leading-tight">{totalSubjects}</p>
               </div>
               <div className="glass-card px-4 py-3 min-w-[150px]">
-                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1 font-semibold">Student</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mb-1 font-semibold">Total tests</p>
                 <p className="text-xl font-bold text-sky-600 leading-tight">{totalTests.toLocaleString()}</p>
               </div>
             </div>
