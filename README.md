@@ -67,7 +67,15 @@ You can run the entire stack (PostgreSQL database, Node.js API, and Vite React f
    ```bash
    docker-compose exec backend npm run db:seed
    ```
-3. **Access the application**:
+3. **Restart the application**:
+   ```
+   docker-compose down
+   ```
+   then
+   ```
+   docker-compose up 
+   ```
+4. **Access the application**:
    - Frontend Dashboard: [http://localhost:5173](http://localhost:5173)
    - Backend Health Status: [http://localhost:3001/api/v1/health](http://localhost:3001/api/v1/health)
 
