@@ -16,17 +16,25 @@ export class ScoreController {
       return;
     }
 
-    // Call to scoreService
-    const student = await scoreService.getStudentBySbd(parsed.data);
+    try {
+      // Call to scoreService
+      const student = await scoreService.getStudentBySbd(parsed.data);
 
-    if (!student) {
-      res.status(404).json({
+      if (!student) {
+        res.status(404).json({
+          success: false,
+          message: `No student found with registration number: ${parsed.data}`,
+        });
+        return;
+      }
+
+      res.json({ success: true, data: student.toJSON() });
+    } catch (error) {
+      console.error('Error in ScoreController:', error);
+      res.status(500).json({
         success: false,
-        message: `No student found with registration number: ${parsed.data}`,
+        message: 'Failed to retrieve student scores',
       });
-      return;
     }
-
-    res.json({ success: true, data: student.toJSON() });
   }
 }

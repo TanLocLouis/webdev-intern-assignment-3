@@ -10,4 +10,13 @@ app.listen(PORT, () => {
   console.log(`API Status: http://localhost:${PORT}/api/health`);
 });
 
+// Prevent Node process from crashing
+// when database connection is lost
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Promise Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception thrown:', error);
+});
+
 export default app;
